@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-red: #900028;
+  --primary-gold: #D5AC31;
+  --black: #1e1e1e;
+  --white: #f4f4f4;
+  --grey: #d2d2d2;
+}
+
+body {
+  color: var(--black);
+  background-color: #f1f5f9;;
+}
+
+h1 {
+  font-size: larger;
+  font-weight: 600;
+}

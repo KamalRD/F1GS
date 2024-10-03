@@ -1,0 +1,22 @@
+{
+    "carouselCards": [
+        {
+            "title": "Our Mission",
+            "icon": "/flag.png",
+            "alt": "Flag Icon",
+            "content": "Lorem ipsum"
+        },
+        {
+            "title": "What We Do",
+            "icon": "/goal.png",
+            "alt": "Goal Icon",
+            "content": "Lorem ipsum"
+        },
+        {
+            "title": "Who Can Join",
+            "icon": "/join.png",
+            "alt": "People Icon",
+            "content": "Lorem ipsum"
+        }
+    ]   
+}
