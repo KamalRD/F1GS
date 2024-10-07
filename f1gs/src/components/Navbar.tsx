@@ -25,13 +25,14 @@ export default function Navbar() {
         <div className="
             md:grid md:grid-cols-[20%_1fr_10%] md:p-4
             align-middle sticky gap-8 px-4 pt-4 pb-2 bg-slate-100 rounded-sm shadow-md
-            flex justify-between z-[1000] items-center" 
+            flex justify-between z-[99] top-0 items-center" 
         >
             <Image 
                 src={'/logo.png'}
                 width={80}
                 height={80}
                 alt="F1GS Logo"
+                priority
             />
             
             {/* Desktop Navigation */}
@@ -70,6 +71,7 @@ export default function Navbar() {
                                 width={80}
                                 height={80}
                                 alt="F1GS Logo"
+                                priority
                             />
                             <Hamburger 
                                 toggled={mobileMenuOpen} 

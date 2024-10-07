@@ -7,13 +7,15 @@ type ButtonProps = {
     onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
     color?: 'primary' | 'secondary';
     hoverColor?: 'primary' | 'secondary';
-    size?: 'small' | 'medium' | 'large';
+    size?: 'xsmall' | 'small' | 'medium' | 'large';
     disabled?: boolean;
     children?: React.ReactNode;
+    type?: "submit" | "reset" | "button" | undefined;
 }
 
 const ButtonStyles = {
     "size": {
+        "xsmall": "h-8 rounded-full px-8 py-6 text-lg font-bold",
         "small": "h-12 rounded-full px-10 py-8 text-lg font-bold",
         "medium": "h-16 rounded-full px-10 py-8 text-xl font-bold",
         "large": "h-20 rounded-full px-10 py-8 text-2xl font-bold"
@@ -32,9 +34,10 @@ const ButtonStyles = {
     }
 }
 
-export default function Button({ onClick, color, size, disabled, children, hoverColor }: ButtonProps) {
+export default function Button({ onClick, color, size, disabled, children, hoverColor, type }: ButtonProps) {
     return (
         <motion.button 
+            type={type}
             className={`${ButtonStyles.size[size ?? 'medium']} ${ButtonStyles.color[color ?? 'primary']} flex items-center`}
             disabled={disabled}
             onClick={onClick}
