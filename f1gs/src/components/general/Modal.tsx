@@ -12,14 +12,14 @@ export default function Modal({ isOpen, onClose, title, children } : ModalProps)
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[100]"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg p-6 w-full max-w-xl relative"
+        className="bg-white rounded-lg p-6 w-full max-w-xl fixed z-[100]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-4 z-50">
+        <div className="flex justify-between items-center mb-4 z-[100]">
           {title && <h2 className="text-2xl text-center mx-auto font-bold">{title}</h2>}
           <button
             className="text-brand_black text-4xl"
@@ -28,7 +28,7 @@ export default function Modal({ isOpen, onClose, title, children } : ModalProps)
             &times;
           </button>
         </div>
-        <div>{children}</div>
+        {children}
       </div>
     </div>
   );
