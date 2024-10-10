@@ -4,16 +4,16 @@ import { useState } from "react";
 
 import { motion } from "framer-motion";
 
-import Button from "./general/Button";
-import Modal from "./general/Modal";
-import Form from "./Form";
+import Button from "../components/general/Button";
+import Modal from "../components/general/Modal";
+import Form from "../components/Form";
 
 export default function Hero() {
     const [ isModalOpen, setModalOpen ] = useState<boolean>(false);
 
     return (
         <div
-            className="relative w-full h-[calc(100vh-112px)] flex flex-col sm:gap-8 gap-4 items-center justify-center"
+            className="relative w-full h-screen flex flex-col sm:gap-8 gap-4 items-center justify-center"
             style={{
                 background: "radial-gradient(circle, rgba(144,0,40,1) 0%, rgba(241,245,249,1) 60%)",
             }}
