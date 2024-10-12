@@ -5,6 +5,7 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/sections/**/*.{js,ts,jsx,tsx,mdx}"
   ],
   theme: {
     extend: {
@@ -15,7 +16,7 @@ const config: Config = {
         brand_white: "var(--white)",
         brand_grey: "var(--grey)"
       },
-      backgroundColor : {
+      backgroundColor: {
         brand_red: "var(--primary-red)",
         brand_gold: "var(--primary-gold)",
         brand_black: "var(--black)",
