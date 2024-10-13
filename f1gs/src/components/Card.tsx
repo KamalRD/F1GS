@@ -24,12 +24,9 @@ function Card({
 }: CardProps) {
   return (
     <motion.div
-      className={`flex flex-col justify-start items-center rounded-xl border-2 border-[rgba(210, 210, 210, .5)] shadow-carousel w-44 h-60 px-2 py-4 transition ${
-        !hoveredMember || isHovered ? "opacity-100" : "opacity-25"
-      }`}
+      className={`flex flex-col justify-start items-center rounded-xl border-2 border-[rgba(210, 210, 210, .5)] shadow-carousel w-44 h-60 px-2 py-4 transition`}
       whileHover={{
-        scale: 1.05,
-        translateY: -10,
+        scale: 1.075,
         transition: {
           duration: 0.1,
         },
@@ -41,11 +38,15 @@ function Card({
         opacity: 1,
         transition: {
           duration: 1,
+          delay: 0.5,
         },
       }}
       viewport={{ once: true }}
       onHoverStart={() => setHoveredMember(name)}
       onHoverEnd={() => setHoveredMember("")}
+      style={{
+        opacity: !hoveredMember || isHovered ? 1 : 0.25,
+      }}
     >
       <Image
         className="rounded-full w-24 h-24 border-2 border-solid border-brand_red object-cover"

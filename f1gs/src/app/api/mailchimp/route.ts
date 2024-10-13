@@ -4,8 +4,8 @@ import mailchimp from '@mailchimp/mailchimp_marketing';
 import { FormValues } from "@/components/Form";
 
 mailchimp.setConfig({
-    apiKey: process.env.MAILCHIMP_API_KEY,
-    server: process.env.MAILCHIMP_SERVER_PREFIX
+    apiKey: process.env.NEXT_PUBLIC_MAILCHIMP_API_KEY,
+    server: process.env.NEXT_PUBLIC_MAILCHIMP_SERVER_PREFIX
 });
 
 const yearToTag: Partial<Record<"1L" | "2L" | "3L", string>> = {
@@ -27,7 +27,7 @@ export async function POST(requestDetails: Request) {
             },
             tags: [yearToTag[formData.year] ?? ""],
         });
-    
+
         if ('id' in mailchimpResponse) {
             return NextResponse.json({
                 success: true,
@@ -44,12 +44,12 @@ export async function POST(requestDetails: Request) {
         if (errorData === "Member Exists") {
             return NextResponse.json({
                 success: false,
-                message: `A member with the email <strong>${formData.email}</strong> is already subscribed`,
+                message: "It seems you're already subscribed to our mailing list!",
             })
         }
         return NextResponse.json({
             success: false,
-            message: "There was an error adding you to our email list!"   
+            message: "There was an error adding you to our email list!"
         })
     }
 }
