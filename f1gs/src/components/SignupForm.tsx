@@ -5,7 +5,7 @@ import { z } from "zod";
 import Button from "./general/Button";
 import { ClipLoader } from "react-spinners";
 
-export default function Form() {
+export default function SignupForm() {
   const [selectedYear, setSelectedYear] = useState<string>("1L");
   const [formValues, setFormValues] = useState<FormValues>({
     firstName: "",
@@ -87,7 +87,7 @@ export default function Form() {
     </div>
   ) : (
     <form
-      className="flex flex-col  md:grid md:grid-cols-2 gap-4 w-[90%] mx-auto"
+      className="flex flex-col md:grid md:grid-cols-2 gap-4 w-[90%] mx-auto"
       onSubmit={attemptSubmit}
     >
       <fieldset className="flex flex-col gap-2">

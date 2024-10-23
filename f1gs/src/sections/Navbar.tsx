@@ -1,13 +1,14 @@
 "use client";
 
 // Default Components / React
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
 // Components
 import { Twirl as Hamburger } from "hamburger-react";
 import Link from "next/link";
+import Icon from "@/components/general/Icon";
 
 export default function Navbar({ activeSection }: { activeSection: string }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
@@ -46,7 +47,7 @@ export default function Navbar({ activeSection }: { activeSection: string }) {
       {/* Desktop Navigation */}
       <div className="hidden md:grid grid-cols-4">
         <Link
-          href={"#about"}
+          href={"/#about"}
           className="flex flex-col items-center justify-center"
         >
           <h1 className="text-xl font-semibold">About Us</h1>
@@ -58,7 +59,7 @@ export default function Navbar({ activeSection }: { activeSection: string }) {
           />
         </Link>
         <Link
-          href={"#team"}
+          href={"/#team"}
           className="flex flex-col items-center justify-center"
         >
           <h1 className="text-xl font-semibold">Our Team</h1>
@@ -70,7 +71,7 @@ export default function Navbar({ activeSection }: { activeSection: string }) {
           />
         </Link>
         <Link
-          href={"#news"}
+          href={"/#news"}
           className="flex flex-col items-center justify-center"
         >
           <h1 className="text-xl font-semibold">News</h1>
@@ -82,7 +83,7 @@ export default function Navbar({ activeSection }: { activeSection: string }) {
           />
         </Link>
         <Link
-          href={"#join"}
+          href={"/#join"}
           className="flex flex-col items-center justify-center"
         >
           <h1 className="text-xl font-semibold">Join F1GS</h1>
@@ -94,6 +95,10 @@ export default function Navbar({ activeSection }: { activeSection: string }) {
           />
         </Link>
       </div>
+
+      <Link href={"/login"} className="flex items-center justify-center">
+        <Icon size="lg" url="/profile.png" alt="Login"></Icon>
+      </Link>
 
       {/* Mobile Navigation */}
       <div className="md:hidden overflow-x-hidden ">
@@ -127,22 +132,34 @@ export default function Navbar({ activeSection }: { activeSection: string }) {
 
           {/* Menu Items */}
           <div className="flex flex-col gap-y-4 mx-auto pb-4 mt-6">
-            <div className="flex flex-col items-center justify-center">
+            <Link
+              href={"/#about"}
+              className="flex flex-col items-center justify-center"
+            >
               <h1>About Us</h1>
               <span className="rounded-full w-2 h-2 bg-brand_black"></span>
-            </div>
-            <div className="flex flex-col items-center justify-center">
+            </Link>
+            <Link
+              href={"/#team"}
+              className="flex flex-col items-center justify-center"
+            >
+              <h1>Our Team</h1>
+              <span className="rounded-full w-2 h-2 bg-brand_black"></span>
+            </Link>
+            <Link
+              href={"/#news"}
+              className="flex flex-col items-center justify-center"
+            >
               <h1>News</h1>
               <span className="rounded-full w-2 h-2 bg-brand_black"></span>
-            </div>
-            <div className="flex flex-col items-center justify-center">
-              <h1>Our Board</h1>
-              <span className="rounded-full w-2 h-2 bg-brand_black"></span>
-            </div>
-            <div className="flex flex-col items-center justify-center">
+            </Link>
+            <Link
+              href={"/#join"}
+              className="flex flex-col items-center justify-center"
+            >
               <h1>Join F1GS</h1>
               <span className="rounded-full w-2 h-2 bg-brand_black"></span>
-            </div>
+            </Link>
           </div>
         </motion.div>
       </div>

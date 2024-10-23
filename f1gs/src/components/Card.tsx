@@ -4,11 +4,14 @@ import React from "react";
 import Image from "next/image";
 
 import { motion } from "framer-motion";
+import Icon from "./general/Icon";
+import Link from "next/link";
 
 type CardProps = {
   name: string;
   title: string;
   image: string;
+  linkedin: string;
   isHovered: boolean;
   hoveredMember: string;
   setHoveredMember: React.Dispatch<React.SetStateAction<string>>;
@@ -18,6 +21,7 @@ function Card({
   name,
   title,
   image,
+  linkedin,
   isHovered,
   hoveredMember,
   setHoveredMember,
@@ -48,13 +52,15 @@ function Card({
         opacity: !hoveredMember || isHovered ? 1 : 0.25,
       }}
     >
-      <Image
-        className="rounded-full w-24 h-24 border-2 border-solid border-brand_red object-cover"
-        width={100}
-        height={100}
-        src={image}
-        alt={`${name} - ${title}`}
-      />
+      <Link href={linkedin} target="_blank">
+        <Image
+          className="rounded-full w-24 h-24 border-2 border-solid border-brand_red object-cover"
+          width={100}
+          height={100}
+          src={image}
+          alt={`${name} - ${title}`}
+        />
+      </Link>
       <div className="flex flex-col mt-3">
         <h1 className="text-lg font-semibold">{name}</h1>
         <h3>{title}</h3>

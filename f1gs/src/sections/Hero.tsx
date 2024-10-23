@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 import Button from "../components/general/Button";
 import Modal from "../components/general/Modal";
-import Form from "../components/Form";
+import Form from "../components/SignupForm";
 
 export default function Hero() {
   const [isModalOpen, setModalOpen] = useState<boolean>(false);

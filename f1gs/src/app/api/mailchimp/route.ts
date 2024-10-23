@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import mailchimp from '@mailchimp/mailchimp_marketing';
-import { FormValues } from "@/components/Form";
+import { FormValues } from "@/components/SignupForm";
 
 mailchimp.setConfig({
     apiKey: process.env.NEXT_PUBLIC_MAILCHIMP_API_KEY,

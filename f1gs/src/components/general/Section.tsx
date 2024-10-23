@@ -2,6 +2,9 @@
 
 import React, { useEffect, useRef, ReactNode } from "react";
 import { motion, useAnimation, useInView } from "framer-motion";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 interface SectionProps {
   id: string;
@@ -48,7 +51,13 @@ export default function Section({
       animate={controls}
       className="scroll-mt-9"
     >
-      {children}
+      {id === "team" ? (
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      ) : (
+        children
+      )}
     </motion.section>
   );
 }
