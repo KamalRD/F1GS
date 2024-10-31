@@ -2,7 +2,7 @@
 
 // React & Next
 import Image from "next/image";
-import { ReactNode, useState } from "react";
+import { ChangeEvent, ReactNode, useState } from "react";
 
 // Components
 import EditBoardForm from "@/components/admin/EditBoardForm";
@@ -17,6 +17,14 @@ import { BoardMember } from "@/lib/types";
 
 // 3rd Partys
 import { useQuery } from "@tanstack/react-query";
+import { z } from "zod";
+import CreateBoardMember from "@/components/admin/CreateBoardMember";
+import DeleteBoardMember from "@/components/admin/DeleteBoardMember";
+
+const searchSchema = z.object({
+  name: z.string(),
+  position: z.string(),
+});
 
 export default function Board() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -25,6 +33,13 @@ export default function Board() {
 
   const [sortedColumn, setSortedColumn] = useState<string>("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  const [searchOptions, setSearchOptions] = useState<
+    z.infer<typeof searchSchema>
+  >({
+    name: "",
+    position: "",
+  });
 
   const {
     data: members,
@@ -35,8 +50,13 @@ export default function Board() {
     queryFn: getBoardMembers,
   });
 
-  const handleIconClick = (action: string, member: BoardMember) => {
-    if (action === "edit") {
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSearchOptions({ ...searchOptions, [name]: value });
+  };
+
+  const handleIconClick = (action: string, member?: BoardMember) => {
+    if (action === "edit" && member) {
       setModalTitle("Edit Board Member");
       setModalContent(
         <EditBoardForm
@@ -45,7 +65,23 @@ export default function Board() {
           setModalTitle={setModalTitle}
         ></EditBoardForm>
       );
+    } else if (action === "delete" && member) {
+      setModalTitle("Delete Board Member");
+      setModalContent(
+        <DeleteBoardMember
+          setModalTitle={setModalTitle}
+          setModalIsOpen={setIsModalOpen}
+          memberToDelete={member}
+        ></DeleteBoardMember>
+      );
     } else {
+      setModalTitle("Add Board Member");
+      setModalContent(
+        <CreateBoardMember
+          setModalIsOpen={setIsModalOpen}
+          setModalTitle={setModalTitle}
+        ></CreateBoardMember>
+      );
     }
 
     setIsModalOpen(true);
@@ -60,18 +96,25 @@ export default function Board() {
     }
   };
 
-  const sortedMembers = members?.slice().sort((a, b) => {
-    const aValue = a[sortedColumn as keyof BoardMember].toLowerCase();
-    const bValue = b[sortedColumn as keyof BoardMember].toLowerCase();
+  const sortedMembers = members
+    ?.slice()
+    .sort((a, b) => {
+      const aValue = a[sortedColumn as keyof BoardMember].toLowerCase();
+      const bValue = b[sortedColumn as keyof BoardMember].toLowerCase();
 
-    if (aValue < bValue) {
-      return sortDirection === "asc" ? -1 : 1;
-    } else if (aValue > bValue) {
-      return sortDirection === "asc" ? 1 : -1;
-    } else {
-      return 0;
-    }
-  });
+      if (aValue < bValue) {
+        return sortDirection === "asc" ? -1 : 1;
+      } else if (aValue > bValue) {
+        return sortDirection === "asc" ? 1 : -1;
+      } else {
+        return 0;
+      }
+    })
+    .filter(
+      (boardMember) =>
+        boardMember.name.includes(searchOptions.name) &&
+        boardMember.position.includes(searchOptions.position)
+    );
 
   if (error) {
     return <div>Error: {error.message}</div>;
@@ -80,6 +123,37 @@ export default function Board() {
   return (
     <div className="w-full h-full mx-auto">
       <div className="w-[90%] max-w-[1000px] mx-auto">
+        <div className="flex justify-between items-center shadow-lg rounded-lg mb-4 p-4 bg-white">
+          <label className="flex flex-col">
+            <input
+              name="name"
+              value={searchOptions.name}
+              onChange={handleSearchChange}
+              placeholder="Member Name"
+              required
+              className="border-2 border-solid rounded-md border-brand_grey focus:border-brand_gold p-2 text-sm"
+            ></input>
+            <span className="text-sm mt-1 ml-1">Name</span>
+          </label>
+          <label className="flex flex-col">
+            <input
+              name="position"
+              value={searchOptions.position}
+              onChange={handleSearchChange}
+              placeholder="Position"
+              required
+              className="border-2 border-solid rounded-md border-brand_grey focus:border-brand_gold p-2 text-sm"
+            ></input>
+            <span className="text-sm mt-1 ml-1">Position</span>
+          </label>
+          <button
+            className="flex flex-col items-center bg-brand_red p-2 rounded-lg font-semibold text-sm text-white hover:bg-brand_gold hover:text-black transition-colors"
+            onClick={() => handleIconClick("create")}
+          >
+            <Icon size="md" url="/admin/plus.svg" alt="Add Member Icon" />
+            Add Member
+          </button>
+        </div>
         <div className="relative max-h-[60vh] overflow-y-auto shadow-lg rounded-lg">
           <table className="table-auto border-collapse text-left w-full bg-white ">
             <thead className="sticky top-0">
@@ -157,6 +231,8 @@ export default function Board() {
                             size="sm"
                             url="/admin/delete.png"
                             alt="Delete"
+                            className="cursor-pointer"
+                            onClick={() => handleIconClick("delete", member)}
                           />
                         </div>
                       </td>

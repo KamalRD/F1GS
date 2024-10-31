@@ -71,10 +71,10 @@ export default function Navbar({ activeSection }: { activeSection: string }) {
           />
         </Link>
         <Link
-          href={"/#news"}
+          href={"/#events"}
           className="flex flex-col items-center justify-center"
         >
-          <h1 className="text-xl font-semibold">News</h1>
+          <h1 className="text-xl font-semibold">Events</h1>
           <motion.span
             className={`inline-block rounded-full w-2 h-2 bg-brand_black`}
             initial={{ opacity: 0 }}
@@ -147,10 +147,10 @@ export default function Navbar({ activeSection }: { activeSection: string }) {
               <span className="rounded-full w-2 h-2 bg-brand_black"></span>
             </Link>
             <Link
-              href={"/#news"}
+              href={"/#events"}
               className="flex flex-col items-center justify-center"
             >
-              <h1>News</h1>
+              <h1>Events</h1>
               <span className="rounded-full w-2 h-2 bg-brand_black"></span>
             </Link>
             <Link

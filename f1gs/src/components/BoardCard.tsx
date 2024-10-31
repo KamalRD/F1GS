@@ -17,7 +17,7 @@ type CardProps = {
   setHoveredMember: React.Dispatch<React.SetStateAction<string>>;
 };
 
-function Card({
+function BoardCard({
   name,
   title,
   image,
@@ -69,4 +69,4 @@ function Card({
   );
 }
 
-export default Card;
+export default BoardCard;

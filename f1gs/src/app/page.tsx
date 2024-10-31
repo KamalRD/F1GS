@@ -7,6 +7,7 @@ import Hero from "@/sections/Hero";
 import Navbar from "@/sections/Navbar";
 
 import Section from "@/components/general/Section";
+import Events from "@/sections/Events";
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState<string>("");
@@ -21,6 +22,9 @@ export default function Home() {
       </Section>
       <Section id="team" setActiveSection={setActiveSection}>
         <Board />
+      </Section>
+      <Section id="events" setActiveSection={setActiveSection}>
+        <Events />
       </Section>
     </>
   );

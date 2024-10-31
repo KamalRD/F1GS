@@ -51,7 +51,7 @@ export default function Section({
       animate={controls}
       className="scroll-mt-9"
     >
-      {id === "team" ? (
+      {id === "team" || id === "events" ? (
         <QueryClientProvider client={queryClient}>
           {children}
         </QueryClientProvider>

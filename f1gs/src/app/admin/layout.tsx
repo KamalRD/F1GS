@@ -12,6 +12,7 @@ import { supabase } from "@/lib/subapase/supabase";
 // External Libraries
 import { Session } from "@supabase/supabase-js";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,9 @@ export default function AdminLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [, setUserSession] = useState<Session | null>(null);
+  const [activeSection, setActiveSection] = useState<string>(
+    pathname.split("/").pop()!
+  );
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -64,12 +68,16 @@ export default function AdminLayout({
   };
 
   return (
-    <div className="grid grid-cols-[300px_auto]">
-      <Sidebar></Sidebar>
+    <div className="grid grid-cols-[256px_auto]">
+      <Sidebar
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+      ></Sidebar>
       <div className="grid grid-rows-[100px_auto]">
         <Header componentTitle={buildPageTile()}></Header>
         <QueryClientProvider client={queryClient}>
           {children}
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 
-import Card from "@/components/Card";
+import BoardCard from "@/components/BoardCard";
 
 import { useQuery } from "@tanstack/react-query";
 import { BoardMember } from "@/lib/types";
@@ -25,7 +25,7 @@ export default function Board() {
 
       <div className="flex flex-row justify-center flex-wrap gap-4 max-w-[900px] mx-auto w-[90%] md:w-[80%] py-4">
         {boardMembers?.map((member) => (
-          <Card
+          <BoardCard
             key={member.name}
             name={member.name}
             title={member.position}
@@ -34,7 +34,7 @@ export default function Board() {
             isHovered={hoveredMember === member.name}
             hoveredMember={hoveredMember}
             setHoveredMember={setHoveredMember}
-          ></Card>
+          ></BoardCard>
         ))}
       </div>
     </div>

@@ -10,7 +10,7 @@ import { z } from "zod";
 
 export default function Login() {
   const [loginValues, setLoginValues] = useState<LoginValues>({
-    email: "",
+    username: "",
     password: "",
   });
   const [errors, setErrors] = useState<
@@ -33,7 +33,10 @@ export default function Login() {
     e.preventDefault();
     try {
       loginSchema.parse(loginValues);
-      const { error } = await signIn(loginValues.email, loginValues.password);
+      const { error } = await signIn(
+        loginValues.username,
+        loginValues.password
+      );
       if (error) {
         setLoginError(error.message);
       } else {
@@ -60,14 +63,14 @@ export default function Login() {
         <label className="flex flex-col mb-4">
           <input
             type="email"
-            name="email"
-            value={loginValues.email}
+            name="username"
+            value={loginValues.username}
             onChange={handleChange}
             placeholder="Email"
             required
             className="border-2 border-solid rounded-md border-brand_grey focus:border-brand_gold p-2 text-sm"
           />
-          <span className="text-xs text-red-500">{errors.email}</span>
+          <span className="text-xs text-red-500">{errors.username}</span>
           <span className="text-sm mt-1">Email</span>
         </label>
         <label className="flex flex-col mb-4">
@@ -98,7 +101,7 @@ export default function Login() {
 }
 
 const loginSchema = z.object({
-  email: z
+  username: z
     .string()
     .min(1, { message: "Email is required" })
     .email({ message: "Invalid email format" })

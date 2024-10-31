@@ -22,3 +22,26 @@ export type BoardMember = {
     id: string,
     linkedin: string,
 }
+
+export type F1GSMember = {
+    name: string;
+    email: string;
+    tags: Array<string>;
+}
+
+export type MailchimpMember = {
+    full_name: string;
+    email_address: string;
+    tags: Array<{ id: number, name: string }>;
+}
+
+export type Event = {
+    title: string,
+    description: string,
+    status: "In Progress" | "Completed",
+    startTime: Date,
+    endTime: Date,
+    image: string;
+    location: string;
+    rsvp: string;
+}
