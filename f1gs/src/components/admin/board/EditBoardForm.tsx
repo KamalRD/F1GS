@@ -3,8 +3,8 @@ import React, { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import Image from "next/image";
 
 // Components / Functions
-import { getImage, insertBoardMember } from "@/lib/subapase/routes";
-import Button from "../general/Button";
+import { updateMemberDetails, getImage } from "@/lib/subapase/routes";
+import Button from "../../general/Button";
 
 // Types
 import { BoardMember } from "@/lib/types";
@@ -16,49 +16,58 @@ import { z } from "zod";
 
 // Zod Schema
 const boardMemberSchema = z.object({
-  first_name: z.string().min(1, { message: "First Name is required" }),
-  last_name: z.string().min(1, { message: "Last Name is required" }),
-  position: z.string().min(1, { message: "Position is required" }),
-  image: z.any().refine((file) => file !== null, {
-    message: "Image is required",
-  }),
+  first_name: z.string().min(0, { message: "First Name is required" }),
+  last_name: z.string().min(0, { message: "Last Name is required" }),
+  position: z.string().min(0, { message: "Position is required" }),
+  image: z.any(),
   linkedin: z
     .string()
-    .min(1, { message: "LinkedIn is required" })
+    .min(0, { message: "LinkedIn is required" })
     .startsWith("https://www.linkedin.com/in/", {
       message: "Enter a valid LinkedIn URL",
     }),
 });
 
-export type CreateBoardMemberValues = z.infer<typeof boardMemberSchema>;
+export type BoardMemberValues = z.infer<typeof boardMemberSchema> & {
+  id: string;
+};
 
-export default function CreateBoardMember({
+export default function EditBoardForm({
+  memberToEdit,
   setModalIsOpen,
   setModalTitle,
 }: {
+  memberToEdit: BoardMember;
   setModalIsOpen: Dispatch<SetStateAction<boolean>>;
   setModalTitle: Dispatch<SetStateAction<string>>;
 }) {
-  const [memberValues, setMemberValues] = useState<CreateBoardMemberValues>({
-    first_name: "",
-    last_name: "",
-    position: "",
-    image: null,
-    linkedin: "",
+  const [memberValues, setMemberValues] = useState<BoardMemberValues>({
+    first_name: memberToEdit.first_name,
+    last_name: memberToEdit.last_name,
+    position: memberToEdit.position,
+    id: memberToEdit.id,
+    image: memberToEdit.image,
+    linkedin: memberToEdit.linkedin,
   });
-  const [imagePreview, setImagePreview] = useState<string | null>();
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    memberToEdit.image
+  );
   const [errors, setErrors] = useState<
-    Partial<Record<keyof CreateBoardMemberValues, string>>
+    Partial<Record<keyof BoardMemberValues, string>>
   >({});
   const [successData, setSuccessData] = useState<Partial<BoardMember>>();
 
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: ({
+      id,
       newMemberDetails,
+      oldImageName,
     }: {
-      newMemberDetails: CreateBoardMemberValues;
-    }) => insertBoardMember(newMemberDetails),
+      id: string;
+      newMemberDetails: Partial<BoardMember>;
+      oldImageName: string;
+    }) => updateMemberDetails(id, newMemberDetails, oldImageName),
     onError() {
       setModalTitle("Something Went Wrong!");
       setTimeout(() => {
@@ -67,13 +76,11 @@ export default function CreateBoardMember({
     },
     onSuccess(data) {
       queryClient.invalidateQueries({ queryKey: ["boardMembers"] });
-      if (data) {
-        setSuccessData(data[0]);
-        setModalTitle("Success!");
-        setTimeout(() => {
-          setModalIsOpen(false);
-        }, 2000);
-      }
+      setSuccessData(data[0]);
+      setModalTitle("Success!");
+      setTimeout(() => {
+        setModalIsOpen(false);
+      }, 2000);
     },
   });
 
@@ -81,7 +88,7 @@ export default function CreateBoardMember({
     const { name, value } = e.target;
     setErrors((prevErrors) => {
       const newErrors = { ...prevErrors };
-      delete newErrors[name as keyof CreateBoardMemberValues];
+      delete newErrors[name as keyof BoardMemberValues];
       return newErrors;
     });
     setMemberValues({ ...memberValues, [name]: value });
@@ -96,25 +103,57 @@ export default function CreateBoardMember({
     }
   };
 
+  const calculateDiff = (
+    currentValues: BoardMemberValues,
+    originalValues: BoardMember
+  ) => {
+    const diff: Partial<BoardMemberValues> = {};
+
+    if (currentValues.first_name !== originalValues.first_name) {
+      diff.first_name = currentValues.first_name;
+    }
+    if (currentValues.last_name !== originalValues.last_name) {
+      diff.last_name = currentValues.last_name;
+    }
+    if (currentValues.position !== originalValues.position) {
+      diff.position = currentValues.position;
+    }
+    if (currentValues.image !== originalValues.image) {
+      diff.image = currentValues.image; // This can be the new file if image is changed
+    }
+
+    return diff;
+  };
+
   const attemptSubmit = async (submitEvent: FormEvent<HTMLFormElement>) => {
     submitEvent.preventDefault();
     const result = boardMemberSchema.safeParse(memberValues);
 
     if (!result.success) {
-      const validationErrors: Partial<
-        Record<keyof CreateBoardMemberValues, string>
-      > = {};
+      const validationErrors: Partial<Record<keyof BoardMemberValues, string>> =
+        {};
       result.error.errors.forEach((err) => {
         if (err.path && err.path[0] in memberValues) {
-          validationErrors[err.path[0] as keyof CreateBoardMemberValues] =
+          validationErrors[err.path[0] as keyof BoardMemberValues] =
             err.message;
         }
       });
       setErrors(validationErrors);
     } else {
+      const changedFields = calculateDiff(memberValues, memberToEdit);
+
+      if (Object.keys(changedFields).length === 0) {
+        setTimeout(() => setModalIsOpen(false), 500);
+        console.log("No changes detected, nothing to submit.");
+      } else {
+        mutation.mutate({
+          id: memberToEdit.id,
+          newMemberDetails: changedFields,
+          oldImageName:
+            memberToEdit.image.match(/\/board_member_images\/(.+)/)?.[1] ?? "",
+        });
+      }
       setErrors({});
-      // Trigger your mutation here
-      mutation.mutate({ newMemberDetails: memberValues });
     }
   };
 
@@ -131,11 +170,11 @@ export default function CreateBoardMember({
         </div>
       ) : mutation.isError ? (
         <div className="flex flex-col gap-y-4 justify-center items-center">
-          <p>There was an error creating a new board member</p>
+          <p>There was an error updating the board member</p>
         </div>
       ) : mutation.isSuccess ? (
         <div className="flex flex-col gap-y-4 justify-center items-center">
-          <h1 className="text-lg">New Member Details:</h1>
+          <h1 className="text-lg">Board Member Details:</h1>
           <div className="flex gap-x-4 items-center">
             {successData?.image ? (
               <Image
@@ -256,7 +295,7 @@ export default function CreateBoardMember({
               color="primary"
               hoverColor="secondary"
             >
-              Create Member
+              Confirm Changes
             </Button>
           </div>
         </form>

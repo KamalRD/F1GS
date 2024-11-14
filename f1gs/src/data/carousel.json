@@ -4,19 +4,19 @@
             "title": "Our Mission",
             "icon": "/flag.png",
             "alt": "Flag Icon",
-            "content": "Lorem ipsum"
+            "content": "Our mission is to empower first-generation law students by breaking down barriers to entry, educating them on the unspoken norms of law school and the legal profession, and helping them adapt and market their unique skills and perspectives. Through these efforts, we aim to enhance the quality of legal education at Fordham Law and to cultivate a new generation of exceptional lawyers."
         },
         {
             "title": "What We Do",
             "icon": "/goal.png",
             "alt": "Goal Icon",
-            "content": "Lorem ipsum"
+            "content": "We collaborate with law firms, the career planning center, and other student organizations to provide programming on outlining and studying for exams, networking, the job search and community building."
         },
         {
             "title": "Who Can Join",
             "icon": "/join.png",
             "alt": "People Icon",
-            "content": "Lorem ipsum"
+            "content": "F1GS is open to all Fordham Law first generation students and allies. We are here to serve as a resource for our campus community, and as such, we look forward to connecting with, and learning from, all students. "
         }
     ]   
 }

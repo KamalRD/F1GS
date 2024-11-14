@@ -1,6 +1,9 @@
-import { BoardMemberValues } from "@/components/admin/EditBoardForm";
+import { BoardMemberValues } from "@/components/admin/board/EditBoardForm";
+import { CreateBoardMemberValues } from "@/components/admin/board/CreateBoardMember";
+import { CreateEventValues } from "@/components/admin/events/CreateEvent";
+
 import { supabase } from "./supabase";
-import { CreateBoardMemberValues } from "@/components/admin/CreateBoardMember";
+import { BackEndEvent, FrontEndEvent } from "../types";
 
 // Board Members
 // READ
@@ -94,7 +97,7 @@ export async function deleteBoardMember(memberId: string, memberImage: string) {
 }
 // Events
 // READ 
-export async function getNonCompletedEvents() {
+export async function getNonCompletedEvents(): Promise<FrontEndEvent[]> {
     const { data, error } = await supabase.from("events").select("title, status, description, location, start_time, end_time, image, rsvp");
     if (error) {
         throw new Error(`Failed to fetch all events info: ${error}`);
@@ -105,8 +108,8 @@ export async function getNonCompletedEvents() {
             title: event.title,
             description: event.description,
             status: event.status,
-            startTime: new Date(event.start_time),
-            endTime: new Date(event.end_time),
+            start_time: new Date(event.start_time),
+            end_time: new Date(event.end_time),
             location: event.location,
             image: getImage("events_images", event.image),
             rsvp: event.rsvp
@@ -125,29 +128,116 @@ export async function getNonCompletedEvents() {
         if (statusDiff !== 0) return statusDiff; // If statuses differ, return the difference
 
         // If statuses are the same, sort by startTime
-        return a.startTime.getTime() - b.startTime.getTime();
+        return a.start_time.getTime() - b.start_time.getTime();
     });
 }
 
 export async function getAllEvents() {
-    const { data, error } = await supabase.from("events").select("title, status, description, location, start_time, end_time, image, rsvp");
+    const { data, error } = await supabase.from("events").select("*");
     if (error) {
         throw new Error(`Failed to fetch all events info: ${error}`);
     }
-
     return data.map(event => {
         return {
             title: event.title,
             description: event.description,
             status: event.status,
-            startTime: new Date(event.start_time),
-            endTime: new Date(event.end_time),
+            start_time: new Date(event.start_time),
+            end_time: new Date(event.end_time),
             location: event.location,
             image: getImage("events_images", event.image),
-            rsvp: event.rsvp
+            rsvp: event.rsvp,
+            id: event.id,
         }
     });
 }
+
+// CREATE
+export async function insertEvent(eventDetails: CreateEventValues) {
+    try {
+        const { data } = await supabase.from("events").insert([{
+            ...eventDetails,
+            image: eventDetails.image.name
+        }]).select();
+        await uploadImage("events_images", eventDetails.image);
+        return data;
+    } catch (e) {
+        console.log(e);
+    }
+
+}
+
+// UPDATE
+export async function updateEvent(eventToUpdate: Partial<BackEndEvent>, id: string) {
+    try {
+        let updateData;
+        if (eventToUpdate.start_time) {
+            eventToUpdate.start_time = new Date(eventToUpdate.start_time);
+        }
+
+        if (eventToUpdate.end_time) {
+            eventToUpdate.end_time = new Date(eventToUpdate.end_time);
+        }
+
+        if (eventToUpdate.image) {
+            const { data } = await supabase.from("events").update({ ...eventToUpdate, image: (eventToUpdate.image as File).name }).eq("id", id).select("title, status, description, location, start_time, end_time, image, rsvp");
+            await uploadImage("events_images", eventToUpdate.image as File);
+            if (data) {
+                const updatedEvent = data[0];
+                updateData = {
+                    title: updatedEvent.title,
+                    description: updatedEvent.description,
+                    status: updatedEvent.status,
+                    start_time: new Date(updatedEvent.start_time),
+                    end_time: new Date(updatedEvent.end_time),
+                    image: getImage("events_images", updatedEvent.image),
+                    location: updatedEvent.location,
+                    rsvp: updatedEvent.rsvp
+                }
+            }
+        } else {
+            const { data } = await supabase.from("events").update({ ...eventToUpdate }).eq("id", id).select("title, status, description, location, start_time, end_time, image, rsvp");
+            if (data) {
+                const updatedEvent = data[0];
+                updateData = {
+                    title: updatedEvent.title,
+                    description: updatedEvent.description,
+                    status: updatedEvent.status,
+                    start_time: new Date(updatedEvent.start_time),
+                    end_time: new Date(updatedEvent.end_time),
+                    image: getImage("events_images", updatedEvent.image),
+                    location: updatedEvent.location,
+                    rsvp: updatedEvent.rsvp
+                }
+            }
+        }
+        return updateData;
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+// DELETE
+export async function deleteEvent(eventId: string, eventImage: string) {
+    try {
+        const { data } = await supabase
+            .from("events")
+            .delete()
+            .eq('id', eventId)
+            .select();
+        await deleteImage("events_images", eventImage);
+        if (data) {
+            return data[0];
+        }
+    } catch (e) {
+        /** To Do
+         * Handle Error
+         */
+        console.log(e);
+    }
+
+}
+
 
 // Storage Functions
 // DELETE

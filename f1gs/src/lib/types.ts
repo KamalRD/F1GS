@@ -35,13 +35,29 @@ export type MailchimpMember = {
     tags: Array<{ id: number, name: string }>;
 }
 
-export type Event = {
+export interface FrontEndEvent {
     title: string,
     description: string,
-    status: "In Progress" | "Completed",
-    startTime: Date,
-    endTime: Date,
+    status: StatusType
+    start_time: Date,
+    end_time: Date,
     image: string;
     location: string;
     rsvp: string;
 }
+
+export interface BackEndEvent {
+    title: string,
+    description: string,
+    status: StatusType
+    start_time: Date,
+    end_time: Date,
+    image: File | string;
+    location: string;
+    rsvp: string;
+    id: string;
+}
+
+export type StatusType = "In Progress" | "Upcoming" | "Completed";
+export type DayLawYear = '1L' | '2L' | '3L';
+export type NightLawYear = '1LE' | '2LE' | '3LE' | '4LE';

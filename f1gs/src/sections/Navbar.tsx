@@ -30,22 +30,24 @@ export default function Navbar({ activeSection }: { activeSection: string }) {
   return (
     <div
       className="
-        md:grid md:grid-cols-[30%_1fr_10%] md:p-4
+        lg:grid lg:grid-cols-[30%_1fr_10%] lg:p-4
         align-middle sticky gap-8 px-4 pt-4 pb-2 bg-[#f1f5f9] rounded-sm shadow-md
         flex justify-between z-[99] top-0 items-center"
     >
-      <Image
-        src={"/logo.png"}
-        width={80}
-        height={80}
-        alt="F1GS Logo"
-        priority
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="cursor-pointer"
-      />
+      <Link href={"/"}>
+        <Image
+          src={"/logo.png"}
+          width={80}
+          height={80}
+          alt="F1GS Logo"
+          priority
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="cursor-pointer"
+        />
+      </Link>
 
       {/* Desktop Navigation */}
-      <div className="hidden md:grid grid-cols-4">
+      <div className="hidden lg:grid grid-cols-4">
         <Link
           href={"/#about"}
           className="flex flex-col items-center justify-center"
@@ -78,7 +80,7 @@ export default function Navbar({ activeSection }: { activeSection: string }) {
           <motion.span
             className={`inline-block rounded-full w-2 h-2 bg-brand_black`}
             initial={{ opacity: 0 }}
-            animate={{ opacity: activeSection === "news" ? 1 : 0 }}
+            animate={{ opacity: activeSection === "events" ? 1 : 0 }}
             transition={{ duration: 0.3 }}
           />
         </Link>
@@ -95,13 +97,15 @@ export default function Navbar({ activeSection }: { activeSection: string }) {
           />
         </Link>
       </div>
-
-      <Link href={"/login"} className="flex items-center justify-center">
+      <Link
+        href={"/login"}
+        className="hidden lg:flex items-center justify-center"
+      >
         <Icon size="lg" url="/profile.png" alt="Login"></Icon>
       </Link>
 
       {/* Mobile Navigation */}
-      <div className="md:hidden overflow-x-hidden ">
+      <div className="lg:hidden overflow-x-hidden ">
         <Hamburger
           toggled={mobileMenuOpen}
           toggle={setMobileMenuOpen}
@@ -131,34 +135,42 @@ export default function Navbar({ activeSection }: { activeSection: string }) {
           </div>
 
           {/* Menu Items */}
-          <div className="flex flex-col gap-y-4 mx-auto pb-4 mt-6">
+          <div className="flex flex-col h-[85%] justify-between mx-auto mt-6">
+            <div className="flex flex-col gap-y-6">
+              <Link
+                href={"/#about"}
+                className="flex flex-col items-center justify-center"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <h1 className="text-xl font-semibold">About Us</h1>
+              </Link>
+              <Link
+                href={"/#team"}
+                className="flex flex-col items-center justify-center"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <h1 className="text-xl font-semibold">Our Team</h1>
+              </Link>
+              <Link
+                href={"/#events"}
+                className="flex flex-col items-center justify-center"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <h1 className="text-xl font-semibold">Events</h1>
+              </Link>
+              <Link
+                href={"/#join"}
+                className="flex flex-col items-center justify-center"
+              >
+                <h1 className="text-xl font-semibold">Join F1GS</h1>
+              </Link>
+            </div>
             <Link
-              href={"/#about"}
-              className="flex flex-col items-center justify-center"
+              href={"/login"}
+              className="flex items-center justify-center gap-x-2"
             >
-              <h1>About Us</h1>
-              <span className="rounded-full w-2 h-2 bg-brand_black"></span>
-            </Link>
-            <Link
-              href={"/#team"}
-              className="flex flex-col items-center justify-center"
-            >
-              <h1>Our Team</h1>
-              <span className="rounded-full w-2 h-2 bg-brand_black"></span>
-            </Link>
-            <Link
-              href={"/#events"}
-              className="flex flex-col items-center justify-center"
-            >
-              <h1>Events</h1>
-              <span className="rounded-full w-2 h-2 bg-brand_black"></span>
-            </Link>
-            <Link
-              href={"/#join"}
-              className="flex flex-col items-center justify-center"
-            >
-              <h1>Join F1GS</h1>
-              <span className="rounded-full w-2 h-2 bg-brand_black"></span>
+              <Icon size="lg" url="/profile.png" alt="Login"></Icon>
+              <h1 className="text-xl font-semibold">Login</h1>
             </Link>
           </div>
         </motion.div>

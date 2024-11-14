@@ -8,6 +8,7 @@ import Navbar from "@/sections/Navbar";
 
 import Section from "@/components/general/Section";
 import Events from "@/sections/Events";
+import Footer from "@/sections/Footer";
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState<string>("");
@@ -26,6 +27,7 @@ export default function Home() {
       <Section id="events" setActiveSection={setActiveSection}>
         <Events />
       </Section>
+      <Footer></Footer>
     </>
   );
 }

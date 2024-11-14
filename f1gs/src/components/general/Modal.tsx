@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { createPortal } from "react-dom";
 
 import { motion } from "framer-motion";
 
@@ -24,7 +25,7 @@ export default function Modal({
     exit: { opacity: 0, scale: 0.8 }, // Modal goes back to hidden state
   };
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[100]"
       onClick={onClose}
@@ -40,7 +41,9 @@ export default function Modal({
       >
         <div className="flex justify-between items-center mb-4 z-[100]">
           {title && (
-            <h2 className="text-2xl text-center mx-auto font-bold">{title}</h2>
+            <h2 className="text-2xl text-center mx-auto font-bold w-[80%]">
+              {title}
+            </h2>
           )}
           <button className="text-brand_black text-4xl" onClick={onClose}>
             &times;
@@ -48,6 +51,7 @@ export default function Modal({
         </div>
         {children}
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }

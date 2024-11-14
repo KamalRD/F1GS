@@ -55,7 +55,7 @@ export function Carousel() {
         className="overflow-hidden lg:hidden block md:w-[80%] lg:w-[60%] mx-auto z-10"
         ref={emblaRef}
       >
-        <div className="flex flex-row m-4 gap-x-4">
+        <div className="flex flex-row my-2 mx-1 gap-x-4">
           {carouselData.carouselCards.map((cardData: CarouselCard, index) => (
             <div
               className="flex flex-col flex-shrink-0 basis-[100%] min-w-0 max-w-72 pl-4 rounded-xl border-2 border-[rgba(210, 210, 210, .5)] shadow-carousel h-96"
@@ -72,7 +72,7 @@ export function Carousel() {
                   {cardData.title}
                 </h3>
               </div>
-              <p className="w-[80%] mx-auto">{cardData.content}</p>
+              <p className="w-[80%] mx-auto text-sm">{cardData.content}</p>
             </div>
           ))}
         </div>
@@ -136,7 +136,9 @@ export function Carousel() {
                         {cardData.title}
                       </h3>
                     </div>
-                    <p className="w-[80%] mx-auto">{cardData.content}</p>
+                    <p className="w-[80%] mx-auto text-sm">
+                      {cardData.content}
+                    </p>
                   </motion.div>
                 );
               }

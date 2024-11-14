@@ -4,7 +4,6 @@ import React from "react";
 import Image from "next/image";
 
 import { motion } from "framer-motion";
-import Icon from "./general/Icon";
 import Link from "next/link";
 
 type CardProps = {
@@ -28,7 +27,7 @@ function BoardCard({
 }: CardProps) {
   return (
     <motion.div
-      className={`flex flex-col justify-start items-center rounded-xl border-2 border-[rgba(210, 210, 210, .5)] shadow-carousel w-44 h-60 px-2 py-4 transition`}
+      className={`flex flex-col justify-start items-center rounded-xl bg-white border-2 border-[rgba(210, 210, 210, .5)] shadow-carousel w-44 h-60 px-2 py-4 transition`}
       whileHover={{
         scale: 1.075,
         transition: {

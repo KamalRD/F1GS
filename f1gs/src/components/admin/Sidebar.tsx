@@ -1,5 +1,4 @@
 import Logout from "./Logout";
-import Icon from "../general/Icon";
 import Link from "next/link";
 import React, { Dispatch, SetStateAction } from "react";
 
@@ -11,7 +10,7 @@ export default function Sidebar({
   setActiveSection: Dispatch<SetStateAction<string>>;
 }) {
   return (
-    <div className="grid grid-rows-[100px_1fr_50px] gap-y-8 justify-between w-64 h-screen p-2 bg-[url('/homepage/mobile-bg.png')] bg-no-repeat bg-cover">
+    <div className="grid grid-rows-[100px_1fr_50px] gap-y-8 justify-between w-64 h-screen p-2 bg-[url('/homepage/hero/mobile-bg.png')] bg-no-repeat bg-cover">
       <Link
         href={"/admin"}
         className="flex flex-row justify-center items-center p-2"

@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 import Button from "../components/general/Button";
 import Modal from "../components/general/Modal";
-import Form from "../components/SignupForm";
+import SignupForm from "../components/SignupForm";
 
 export default function Hero() {
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
@@ -14,11 +14,11 @@ export default function Hero() {
   return (
     <div
       className="relative w-full md:h-screen h-[90vh] flex flex-col sm:gap-8 gap-4 items-center justify-center
-      md:bg-[url('/homepage/desktop-bg.png')]
-      bg-[url('/homepage/mobile-bg.png')] bg-no-repeat bg-cover"
+      md:bg-[url('/homepage/hero/desktop-bg.png')]
+      bg-[url('/homepage/hero/mobile-bg.png')] bg-no-repeat bg-cover"
     >
       {/* Text */}
-      <motion.h1
+      <motion.div
         animate={{
           y: 0,
           opacity: 1,
@@ -27,12 +27,18 @@ export default function Hero() {
           },
         }}
         initial={{ y: -10, opacity: 0 }}
-        className="text-center text-brand_black text-3xl sm:text-4xl md:text-6xl  md:m-0 pb-4 font-bold w-[90%]"
+        className="text-center md:m-0 pb-4 w-[90%]"
       >
-        Fordham Law
-        <br />
-        First Generation Students
-      </motion.h1>
+        <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-brand_black">
+          Fordham Law
+          <br />
+          First Generation Students
+        </h1>
+        <h3 className="md:w-[60%] mx-auto text-base md:text-xl font-medium mt-4 text-balance">
+          Empowering first-generation law students at Fordham University to
+          excel, connect, and lead in the legal profession
+        </h3>
+      </motion.div>
       <div className="mt-8 hidden md:block">
         <Button
           size="large"
@@ -47,7 +53,7 @@ export default function Hero() {
           onClose={() => setModalOpen(false)}
           title="Join F1GS"
         >
-          <Form />
+          <SignupForm />
         </Modal>
       </div>
       <div className="my-4 md:hidden block">
@@ -64,7 +70,7 @@ export default function Hero() {
           onClose={() => setModalOpen(false)}
           title="Join F1GS"
         >
-          <Form />
+          <SignupForm />
         </Modal>
       </div>
     </div>

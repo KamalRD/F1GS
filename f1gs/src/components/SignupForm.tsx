@@ -1,27 +1,50 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useState, useEffect } from "react";
 import { z } from "zod";
 
 // Components
 import Button from "./general/Button";
 import { ClipLoader } from "react-spinners";
+import { DayLawYear, NightLawYear } from "@/lib/types";
 
 export default function SignupForm() {
-  const [selectedYear, setSelectedYear] = useState<string>("1L");
   const [formValues, setFormValues] = useState<FormValues>({
     firstName: "",
     lastName: "",
     email: "",
+    studentType: "Day",
     year: "1L",
   });
   const [errors, setErrors] = useState<
     Partial<Record<keyof FormValues, string>>
   >({});
+  const [selectedYear, setSelectedYear] = useState<DayLawYear | NightLawYear>(
+    "1L"
+  );
+  const [selectedType, setSelectedType] = useState<"Day" | "Evening">("Day");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [subscriptionResponse, setSubscriptionResponse] = useState<{
     success: boolean;
     message: string;
   }>();
+
+  useEffect(() => {
+    if (selectedType === "Day") {
+      setSelectedYear("1L");
+      setFormValues({ ...formValues, year: "1L" });
+    } else {
+      setSelectedYear("1LE");
+      setFormValues({ ...formValues, year: "1LE" });
+    }
+  }, [selectedType]);
+
+  const yearsToDisplay =
+    selectedType === "Day" ? ["1L", "2L", "3L"] : ["1LE", "2LE", "3LE", "4LE"];
+
+  const handleYearSelect = (selectedYear: DayLawYear | NightLawYear) => {
+    setSelectedYear(selectedYear);
+    setFormValues({ ...formValues, year: selectedYear });
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -41,7 +64,7 @@ export default function SignupForm() {
       setIsLoading(true);
 
       const addMemberResponse = await (
-        await fetch("/api/mailchimp", {
+        await fetch("/api/mailchimp?action=subscribeNewMember", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ formValues }),
@@ -132,12 +155,43 @@ export default function SignupForm() {
           <span className="text-xs text-red-500">{errors.email}</span>
           <span className="text-sm">Email</span>
         </label>
-        <>
-          <h2 className="row-start-1 col-span-2 text-md font-semibold">
-            Your Year
-          </h2>
-          <div className="flex flex-row justify-start gap-x-4 w-[60%]">
-            {["1L", "2L", "3L"].map((year) => (
+      </fieldset>
+      <fieldset className="col-span-2 grid grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-md font-semibold">Division</h2>
+          <div className="flex flex-row justify-start gap-x-4 w-[45%]">
+            {["Day", "Evening"].map((type) => (
+              <span key={type} className="text-sm flex flex-col">
+                <label
+                  htmlFor={type}
+                  className={`flex items-center flex-col cursor-pointer relative`}
+                >
+                  <input
+                    type="radio"
+                    checked={selectedType === type}
+                    value={type}
+                    id={type}
+                    onChange={(e) => {
+                      const selectedType = (e.target as HTMLInputElement)
+                        .value as "Day" | "Evening";
+                      setSelectedType(selectedType);
+                      setFormValues({
+                        ...formValues,
+                        studentType: selectedType,
+                      });
+                    }}
+                  />
+                  {type}
+                </label>
+              </span>
+            ))}
+          </div>
+          {errors.year && <span className="text-red-500">{errors.year}</span>}
+        </div>
+        <div className="flex flex-col gap-2">
+          <h2 className="text-md font-semibold">Year</h2>
+          <div className="flex flex-row justify-start gap-x-4 w-[45%]">
+            {yearsToDisplay.map((year) => (
               <span key={year} className="text-sm flex flex-col">
                 <label
                   htmlFor={year}
@@ -148,12 +202,13 @@ export default function SignupForm() {
                     checked={selectedYear === year}
                     value={year}
                     id={year}
-                    onClick={(e) => {
-                      const selectedYear = (e.target as HTMLInputElement)
-                        .value as "1L" | "2L" | "3L";
-                      setSelectedYear(selectedYear);
-                      setFormValues({ ...formValues, year: selectedYear });
-                    }}
+                    onChange={(e) =>
+                      handleYearSelect(
+                        (e.target as HTMLInputElement).value as
+                          | DayLawYear
+                          | NightLawYear
+                      )
+                    }
                   />
                   {year}
                 </label>
@@ -161,7 +216,7 @@ export default function SignupForm() {
             ))}
           </div>
           {errors.year && <span className="text-red-500">{errors.year}</span>}
-        </>
+        </div>
       </fieldset>
       <div className="mx-auto col-span-2">
         <Button
@@ -178,17 +233,50 @@ export default function SignupForm() {
 }
 
 // Zod Schema
-const formSchema = z.object({
-  firstName: z.string().min(1, { message: "First Name is required" }),
-  lastName: z.string().min(1, { message: "Last Name is required" }),
-  email: z
-    .string()
-    .min(1, { message: "Email is required" })
-    .email({ message: "Invalid email format" })
-    .endsWith("@fordham.edu", { message: "Use your '@fordham.edu' email" }),
-  year: z.enum(["1L", "2L", "3L"], {
-    required_error: "You must select a year",
-  }),
-});
+const DayLawYearEnum = z.enum(["1L", "2L", "3L"]);
+const NightLawYearEnum = z.enum(["1LE", "2LE", "3LE", "4LE"]);
+
+const formSchema = z
+  .object({
+    firstName: z.string().min(1, { message: "First Name is required" }),
+    lastName: z.string().min(1, { message: "Last Name is required" }),
+    email: z
+      .string()
+      .min(1, { message: "Email is required" })
+      .email({ message: "Invalid email format" })
+      .endsWith("@fordham.edu", { message: "Use your '@fordham.edu' email" }),
+
+    // Field to distinguish between Day and Night students
+    studentType: z.enum(["Day", "Evening"], {
+      required_error: "You must select a student type",
+    }),
+
+    // Conditional year field based on the student type
+    year: z.union([DayLawYearEnum, NightLawYearEnum], {
+      required_error: "You must select a year",
+    }),
+  })
+  .refine(
+    (data) => {
+      // Validation logic to ensure that the selected year matches the student type
+      if (
+        data.studentType === "Day" &&
+        !["1L", "2L", "3L"].includes(data.year)
+      ) {
+        return false;
+      }
+      if (
+        data.studentType === "Evening" &&
+        !["1LE", "2LE", "3LE", "4LE"].includes(data.year)
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Selected year does not match the student type",
+      path: ["year"],
+    }
+  );
 
 export type FormValues = z.infer<typeof formSchema>;
