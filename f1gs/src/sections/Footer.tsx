@@ -12,7 +12,14 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex flex-col items-center md:flex-row md:justify-between md:items-center gap-6">
           <div className="flex items-center space-x-4">
-            <Image src="/logo.png" alt="Site Logo" width={125} height={125} />
+            <Image
+              src="/logo.png"
+              alt="F1GS Logo"
+              width={125}
+              height={125}
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="cursor-pointer"
+            />
           </div>
           <nav className="flex space-x-6 text-black sm:text-xl text-lg font-semibold">
             <Link href="#about" className="hover:text-brand_red transition">

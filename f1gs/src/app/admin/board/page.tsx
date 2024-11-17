@@ -48,6 +48,7 @@ export default function Board() {
   } = useQuery<BoardMember[], Error>({
     queryKey: ["boardMembers"],
     queryFn: getBoardMembers,
+    staleTime: 1000 * 60 * 5,
   });
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {

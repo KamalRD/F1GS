@@ -8,7 +8,7 @@ import { BackEndEvent, FrontEndEvent } from "../types";
 // Board Members
 // READ
 export async function getBoardMembers() {
-    const { data, error } = await supabase.from("board_members").select("first_name, last_name, position, image, id, linkedin");
+    const { data, error } = await supabase.from("board_members").select("first_name, last_name, position, image, id, linkedin, priority ");
     if (error) {
         throw new Error(`Failed to fetch all members info: ${error}`)
     }
@@ -22,7 +22,7 @@ export async function getBoardMembers() {
             name: `${member.first_name} ${member.last_name}`,
             ...member
         })
-    });
+    }).sort((a, b) => a.priority - b.priority);
 }
 
 // UPDATE
