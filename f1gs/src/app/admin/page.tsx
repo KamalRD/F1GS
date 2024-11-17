@@ -8,7 +8,7 @@ import { supabase } from "@/lib/subapase/supabase";
 import { Session } from "@supabase/supabase-js";
 
 export default function Admin() {
-  const [userSession, setUserSession] = useState<Session | null>(null);
+  const [, setUserSession] = useState<Session | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {

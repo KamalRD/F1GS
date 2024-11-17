@@ -1,5 +1,4 @@
 import { signOut } from "@/lib/subapase/auth";
-import Icon from "../general/Icon";
 
 export default function Logout() {
   return (

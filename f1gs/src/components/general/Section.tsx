@@ -33,7 +33,7 @@ export default function Section({
         setActiveSection(id);
       }
     }
-  }, [isInView, id, baseUrl]);
+  }, [isInView, id, baseUrl, setActiveSection]);
 
   useEffect(() => {
     controls.start({

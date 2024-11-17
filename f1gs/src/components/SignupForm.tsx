@@ -31,10 +31,10 @@ export default function SignupForm() {
   useEffect(() => {
     if (selectedType === "Day") {
       setSelectedYear("1L");
-      setFormValues({ ...formValues, year: "1L" });
+      setFormValues((previousValues) => ({ ...previousValues, year: "1L" }));
     } else {
       setSelectedYear("1LE");
-      setFormValues({ ...formValues, year: "1LE" });
+      setFormValues((previousValues) => ({ ...previousValues, year: "1LE" }));
     }
   }, [selectedType]);
 

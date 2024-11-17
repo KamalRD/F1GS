@@ -21,7 +21,9 @@ export default function Events() {
   return (
     <div className="mx-auto lg:w-[80%] w-full py-8 text-center">
       <h1 className="text-center text-3xl font-bold py-4">Events</h1>
-      <div className="flex flex-col lg:grid lg:grid-cols-2 lg:grid-rows-auto justify-center items-center gap-2">
+      <div
+        className={`flex flex-col lg:grid lg:grid-cols-2 lg:grid-rows-auto justify-center items-center gap-2`}
+      >
         {events &&
           events.length > 0 &&
           events.map((event) => {

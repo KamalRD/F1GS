@@ -35,8 +35,7 @@ export type EditEventValues = z.infer<typeof eventSchema> & {
 };
 
 const formatToEST = (date: Date) => {
-  // Options to format date to EST with the desired components
-  const options = {
+  const [month, day, year, hour, minute] = new Intl.DateTimeFormat("en-US", {
     timeZone: "America/New_York",
     year: "numeric",
     month: "2-digit",
@@ -44,13 +43,7 @@ const formatToEST = (date: Date) => {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false, // 24-hour format
-  };
-
-  // Get the formatted parts
-  const [month, day, year, hour, minute] = new Intl.DateTimeFormat(
-    "en-US",
-    options
-  )
+  })
     .formatToParts(date)
     .filter((part) =>
       ["month", "day", "year", "hour", "minute"].includes(part.type)

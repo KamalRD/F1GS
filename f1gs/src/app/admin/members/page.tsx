@@ -22,6 +22,10 @@ async function getAllEmailMembers() {
   }));
 }
 
+type StringKeys<T> = {
+  [K in keyof T]: T[K] extends string ? K : never;
+}[keyof T];
+
 export default function Members() {
   const [sortColumn, setSortColumn] = useState<string>("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -29,17 +33,17 @@ export default function Members() {
 
   const {
     data: f1gsMembers,
-    error,
+    // error,
     isLoading,
   } = useQuery<F1GSMember[], Error>({
     queryKey: ["f1gsMembers"],
     queryFn: getAllEmailMembers,
   });
 
-  const [tagOptions, setTagOptions] = useState<Set<string>>(
-    new Set(f1gsMembers?.flatMap((member) => member.tags))
-  );
-  const [filterTags, setFilterTags] = useState<Array<string>>([]);
+  // const [tagOptions, setTagOptions] = useState<Set<string>>(
+  //   new Set(f1gsMembers?.flatMap((member) => member.tags))
+  // );
+  // const [filterTags, setFilterTags] = useState<Array<string>>([]);
 
   const handleSort = (column: "name" | "email") => {
     if (sortColumn === column) {
@@ -64,8 +68,8 @@ export default function Members() {
 
   const sortedF1GSMembers = f1gsMembers
     ?.sort((a, b) => {
-      const aValue = a[sortColumn as keyof F1GSMember].toLowerCase();
-      const bValue = b[sortColumn as keyof F1GSMember].toLowerCase();
+      const aValue = a[sortColumn as StringKeys<F1GSMember>].toLowerCase();
+      const bValue = b[sortColumn as StringKeys<F1GSMember>].toLowerCase();
 
       if (aValue < bValue) {
         return sortDirection === "asc" ? -1 : 1;

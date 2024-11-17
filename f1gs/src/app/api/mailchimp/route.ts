@@ -6,7 +6,7 @@ import { FormValues } from "@/components/SignupForm";
 
 // 3rd Party Librariess
 import mailchimp from '@mailchimp/mailchimp_marketing';
-import { DayLawYear, NightLawYear } from "@/lib/types";
+import { calculateGraduationYear } from "@/lib/helpers";
 
 mailchimp.setConfig({
     apiKey: process.env.NEXT_PUBLIC_MAILCHIMP_API_KEY,
@@ -89,65 +89,26 @@ async function subscribeNewMember(formData: FormValues) {
             data: mailchimpResponse,
         });
     } catch (e: unknown) {
-        const errorData = (e as any).response?.body?.title || (e as any).message || "An unknown error occurred";
+        const isErrorWithResponse = (err: unknown): err is { response: { body: { title: string } } } =>
+            typeof err === 'object' && err !== null && 'response' in err;
+
+        let errorData = "An unknown error occurred";
+
+        if (isErrorWithResponse(e)) {
+            errorData = e.response.body.title;
+        } else if (e instanceof Error) {
+            errorData = e.message;
+        }
+
         if (errorData === "Member Exists") {
             return NextResponse.json({
                 success: false,
                 message: "It seems you're already subscribed to our mailing list!",
-            })
+            });
         }
         return NextResponse.json({
             success: false,
-            message: "There was an error adding you to our email list!"
-        })
-    }
-}
-
-export function calculateGraduationYear(lawYear: DayLawYear | NightLawYear): number {
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth() + 1; // getMonth() returns 0-based month
-
-    const isDayLawYear = (year: DayLawYear | NightLawYear): year is DayLawYear => {
-        return year === '1L' || year === '2L' || year === '3L';
-    };
-
-    if (isDayLawYear(lawYear)) {
-        switch (lawYear) {
-            case '1L':
-                return currentMonth >= 5 && currentMonth <= 12
-                    ? currentYear + 3
-                    : currentYear + 2;
-            case '2L':
-                return currentMonth >= 5 && currentMonth <= 12
-                    ? currentYear + 2
-                    : currentYear + 1;
-            case '3L':
-                return currentMonth >= 5 && currentMonth <= 12
-                    ? currentYear + 1
-                    : currentYear;
-            default:
-                throw new Error('Invalid Law Year');
-        }
-    } else {
-        switch (lawYear) {
-            case '1LE':
-                return currentMonth >= 5 && currentMonth <= 12
-                    ? currentYear + 4
-                    : currentYear + 3;
-            case '2LE':
-                return currentMonth >= 5 && currentMonth <= 12
-                    ? currentYear + 3
-                    : currentYear + 2;
-            case '3LE':
-                return currentMonth >= 5 && currentMonth <= 12
-                    ? currentYear + 2
-                    : currentYear + 1;
-            case '4LE':
-                return currentMonth >= 5 && currentMonth <= 12
-                    ? currentYear + 1
-                    : currentYear;
-            default:
-                throw new Error('Invalid Law Year');
-        }
+            message: "There was an error adding you to our email list!",
+        });
     }
 }

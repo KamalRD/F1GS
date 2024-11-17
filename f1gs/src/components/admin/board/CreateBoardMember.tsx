@@ -4,7 +4,6 @@ import Image from "next/image";
 
 // Components / Functions
 import { getImage, insertBoardMember } from "@/lib/subapase/routes";
-import Button from "../../general/Button";
 
 // Types
 import { BoardMember } from "@/lib/types";
