@@ -15,6 +15,7 @@ import { F1GSMember, MailchimpMember } from "@/lib/types";
 // 3rd Party Libraries
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import TagChip from "@/components/admin/members/TagChipTable";
 
 async function getAllEmailMembers() {
   const membersResponse = await fetch("/api/mailchimp?action=getAllMembers");
@@ -48,12 +49,13 @@ export default function Members() {
     staleTime: 1000 * 60 * 10,
   });
 
-  const [filterTags, setFilterTags] = useState<Array<string>>([]);
+  const [yearFilterTags, setYearFilterTags] = useState<Array<string>>([]);
+  const [divisionFilterTags, setDivionFilterTags] = useState<Array<string>>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   useEffect(() => {
     setPageNumber(1);
-  }, [filterTags]);
+  }, [yearFilterTags, divisionFilterTags, searchTerm]);
 
   const handleSort = (column: "name" | "email") => {
     if (sortColumn === column) {
@@ -89,11 +91,14 @@ export default function Members() {
         return 0;
       }
     })
-    .filter(
-      (member) =>
-        filterTags.length === 0 ||
-        member.tags.some((tag) => filterTags.includes(tag))
-    )
+    .filter((member) => {
+      return (
+        (yearFilterTags.length === 0 ||
+          member.tags.some((tag) => yearFilterTags.includes(tag))) &&
+        (divisionFilterTags.length === 0 ||
+          member.tags.some((tag) => divisionFilterTags.includes(tag)))
+      );
+    })
     .filter((member) => member.name.includes(searchTerm));
   const totalPages = Math.ceil((sortedF1GSMembers?.length ?? 1) / 10);
 
@@ -118,7 +123,8 @@ export default function Members() {
                 new Set(f1gsMembers?.flatMap((member) => member.tags)).values()
               ).filter((tag) => tag.includes("Class of"))}
               placeholder={"Class of..."}
-              setFilterOptions={setFilterTags}
+              setFilterOptions={setYearFilterTags}
+              currentFilterTags={yearFilterTags}
             ></Select>
             <span className="text-sm mt-1 ml-1">Year</span>
           </label>
@@ -128,7 +134,8 @@ export default function Members() {
                 new Set(f1gsMembers?.flatMap((member) => member.tags)).values()
               ).filter((tag) => !tag.includes("Class of"))}
               placeholder={"Day"}
-              setFilterOptions={setFilterTags}
+              setFilterOptions={setDivionFilterTags}
+              currentFilterTags={divisionFilterTags}
             ></Select>
             <span className="text-sm mt-1 ml-1">Division</span>
           </label>
@@ -199,8 +206,10 @@ export default function Members() {
                           <h3 className="text-gray-700">{member.name}</h3>
                         </td>
                         <td className="p-4 text-gray-700">{member.email}</td>
-                        <td className="p-4 text-gray-700">
-                          {member.tags.join(", ")}
+                        <td className="p-4 text-gray-700 flex gap-x-2 items-center">
+                          {member.tags.map((tag, idx) => (
+                            <TagChip key={idx} chipText={tag}></TagChip>
+                          ))}
                         </td>
                       </tr>
                     ))}

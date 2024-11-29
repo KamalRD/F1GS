@@ -5,13 +5,17 @@ export default function Select({
   allOptions,
   placeholder,
   setFilterOptions,
+  currentFilterTags,
 }: {
   allOptions: Array<string>;
   placeholder: string;
   setFilterOptions: Dispatch<SetStateAction<Array<string>>>;
+  currentFilterTags: Array<string>;
 }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState<Array<string>>([]);
+  const [selectedOptions, setSelectedOptions] = useState<Array<string>>(
+    currentFilterTags ?? []
+  );
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prevState) => !prevState);

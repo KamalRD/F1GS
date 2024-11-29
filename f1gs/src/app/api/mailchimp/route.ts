@@ -74,7 +74,7 @@ async function subscribeNewMember(formData: FormValues) {
                 FNAME: formData.firstName,
                 LNAME: formData.lastName,
             },
-            tags: [graduationYear],
+            tags: [graduationYear, formData.studentType],
         });
 
         if ('id' in mailchimpResponse) {
