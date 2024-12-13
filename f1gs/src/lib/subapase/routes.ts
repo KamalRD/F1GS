@@ -103,6 +103,8 @@ export async function getNonCompletedEvents(): Promise<FrontEndEvent[]> {
         throw new Error(`Failed to fetch all events info: ${error}`);
     }
 
+    console.log("Data: ", data);
+
     const mappedEvents = data.filter((event) => ["Upcoming", "In Progress"].includes(event.status)).map(event => {
         return {
             title: event.title,
@@ -115,6 +117,8 @@ export async function getNonCompletedEvents(): Promise<FrontEndEvent[]> {
             rsvp: event.rsvp
         }
     });
+
+    console.log("Mapped Events:", mappedEvents);
 
     return mappedEvents.sort((a, b) => {
         const statusOrder: Record<string, number> = {
