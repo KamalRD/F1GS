@@ -15,18 +15,20 @@ export default function Home() {
   return (
     <>
       <Navbar activeSection={activeSection} />
-      <Section id="hero" baseUrl={true} setActiveSection={setActiveSection}>
-        <Hero />
-      </Section>
-      <Section id="about" setActiveSection={setActiveSection}>
-        <About />
-      </Section>
-      <Section id="team" setActiveSection={setActiveSection}>
-        <Board />
-      </Section>
-      <Section id="events" setActiveSection={setActiveSection}>
-        <Events />
-      </Section>
+      <div className="flex flex-col gap-y-8">
+        <Section id="hero" baseUrl={true} setActiveSection={setActiveSection}>
+          <Hero />
+        </Section>
+        <Section id="about" setActiveSection={setActiveSection}>
+          <About />
+        </Section>
+        <Section id="team" setActiveSection={setActiveSection}>
+          <Board />
+        </Section>
+        <Section id="events" setActiveSection={setActiveSection}>
+          <Events />
+        </Section>
+      </div>
       <Footer></Footer>
     </>
   );
