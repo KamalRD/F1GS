@@ -17,9 +17,10 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 const queryClient = new QueryClient();
 
 const pageMap: Record<string, string> = {
+  admin: "F1GS Overview",
   board: "Our Board",
   events: "Events",
-  members: "F1GS Members",
+  members: "Members",
 };
 
 export default function AdminLayout({

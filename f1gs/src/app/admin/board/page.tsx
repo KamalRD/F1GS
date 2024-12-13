@@ -8,6 +8,8 @@ import { ChangeEvent, ReactNode, useState } from "react";
 import EditBoardForm from "@/components/admin/board/EditBoardForm";
 import Icon from "@/components/general/Icon";
 import Modal from "@/components/general/Modal";
+import CreateBoardMember from "@/components/admin/board/CreateBoardMember";
+import DeleteBoardMember from "@/components/admin/board/DeleteBoardMember";
 
 // Functions
 import { getBoardMembers } from "@/lib/subapase/routes";
@@ -18,8 +20,6 @@ import { BoardMember } from "@/lib/types";
 // 3rd Partys
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
-import CreateBoardMember from "@/components/admin/board/CreateBoardMember";
-import DeleteBoardMember from "@/components/admin/board/DeleteBoardMember";
 
 const searchSchema = z.object({
   name: z.string(),

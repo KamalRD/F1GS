@@ -29,6 +29,8 @@ async function handleGetRequests(request: Request) {
     switch (action) {
         case "getAllMembers":
             return await getAllEmailMembers();
+        case "getMemberCount":
+            return await getListMemberCount();
         default:
             return NextResponse.json({ success: false, message: "Invalid query action" }, { status: 400 });
     }
@@ -48,6 +50,25 @@ async function getAllEmailMembers() {
         })
     }
 };
+
+async function getListMemberCount() {
+    try {
+        const response = await fetch(`https://${process.env.NEXT_PUBLIC_MAILCHIMP_SERVER_PREFIX}.api.mailchimp.com/3.0/lists/8ed7e238ac?include_total_contacts=true`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${process.env.NEXT_PUBLIC_MAILCHIMP_API_KEY}`,
+                "Content-Type": "application/json",
+            },
+        })
+        const data = await response.json();
+        return NextResponse.json({ success: true, data: data.stats.member_count })
+    } catch (error) {
+        return NextResponse.json({
+            success: false,
+            message: "Failed to fetch email members",
+        })
+    }
+}
 
 // POST
 async function handlePostRequests(request: Request) {
@@ -74,7 +95,7 @@ async function subscribeNewMember(formData: FormValues) {
                 FNAME: formData.firstName,
                 LNAME: formData.lastName,
             },
-            tags: [graduationYear],
+            tags: [graduationYear, formData.studentType],
         });
 
         if ('id' in mailchimpResponse) {

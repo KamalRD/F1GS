@@ -1,7 +1,13 @@
 "use client";
 
 // React / Next
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+// Components
+import Icon from "@/components/general/Icon";
+import Select from "@/components/admin/members/Select";
+import Modal from "@/components/general/Modal";
+import SignupForm from "@/components/SignupForm";
 
 // Types
 import { F1GSMember, MailchimpMember } from "@/lib/types";
@@ -9,6 +15,7 @@ import { F1GSMember, MailchimpMember } from "@/lib/types";
 // 3rd Party Libraries
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import TagChip from "@/components/admin/members/TagChipTable";
 
 async function getAllEmailMembers() {
   const membersResponse = await fetch("/api/mailchimp?action=getAllMembers");
@@ -30,6 +37,7 @@ export default function Members() {
   const [sortColumn, setSortColumn] = useState<string>("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [pageNumber, setPageNumber] = useState<number>(1);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const {
     data: f1gsMembers,
@@ -38,12 +46,16 @@ export default function Members() {
   } = useQuery<F1GSMember[], Error>({
     queryKey: ["f1gsMembers"],
     queryFn: getAllEmailMembers,
+    staleTime: 1000 * 60 * 10,
   });
 
-  // const [tagOptions, setTagOptions] = useState<Set<string>>(
-  //   new Set(f1gsMembers?.flatMap((member) => member.tags))
-  // );
-  // const [filterTags, setFilterTags] = useState<Array<string>>([]);
+  const [yearFilterTags, setYearFilterTags] = useState<Array<string>>([]);
+  const [divisionFilterTags, setDivionFilterTags] = useState<Array<string>>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  useEffect(() => {
+    setPageNumber(1);
+  }, [yearFilterTags, divisionFilterTags, searchTerm]);
 
   const handleSort = (column: "name" | "email") => {
     if (sortColumn === column) {
@@ -79,15 +91,63 @@ export default function Members() {
         return 0;
       }
     })
-    // .filter((member) => )
-    .slice(10 * (pageNumber - 1), 10 * pageNumber);
-
-  // filter to include only those members who have at least 1 tag in
+    .filter((member) => {
+      return (
+        (yearFilterTags.length === 0 ||
+          member.tags.some((tag) => yearFilterTags.includes(tag))) &&
+        (divisionFilterTags.length === 0 ||
+          member.tags.some((tag) => divisionFilterTags.includes(tag)))
+      );
+    })
+    .filter((member) => member.name.includes(searchTerm));
+  const totalPages = Math.ceil((sortedF1GSMembers?.length ?? 1) / 10);
 
   return (
     <div className="w-full h-full mx-auto">
       <div className="w-[90%] max-w-[1000px] mx-auto">
-        <div className="relative max-h-[70vh] overflow-y-auto shadow-lg rounded-lg">
+        <div className="flex justify-between items-center shadow-lg rounded-lg mb-4 p-4 bg-white">
+          <label className="flex flex-col">
+            <input
+              name="name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Sandra Day O'Connor"
+              required
+              className="border-2 border-solid rounded-md border-brand_grey focus:border-brand_gold p-2 text-sm"
+            ></input>
+            <span className="text-sm mt-1 ml-1">Member Name</span>
+          </label>
+          <label className="flex flex-col">
+            <Select
+              allOptions={Array.from(
+                new Set(f1gsMembers?.flatMap((member) => member.tags)).values()
+              ).filter((tag) => tag.includes("Class of"))}
+              placeholder={"Class of..."}
+              setFilterOptions={setYearFilterTags}
+              currentFilterTags={yearFilterTags}
+            ></Select>
+            <span className="text-sm mt-1 ml-1">Year</span>
+          </label>
+          <label className="flex flex-col">
+            <Select
+              allOptions={Array.from(
+                new Set(f1gsMembers?.flatMap((member) => member.tags)).values()
+              ).filter((tag) => !tag.includes("Class of"))}
+              placeholder={"Day"}
+              setFilterOptions={setDivionFilterTags}
+              currentFilterTags={divisionFilterTags}
+            ></Select>
+            <span className="text-sm mt-1 ml-1">Division</span>
+          </label>
+          <button
+            className="flex flex-col items-center bg-brand_red p-2 rounded-lg font-semibold text-sm text-white hover:bg-brand_gold hover:text-black transition-colors"
+            onClick={() => setIsModalOpen(true)}
+          >
+            <Icon size="md" url="/admin/plus.svg" alt="Add Member Icon" />
+            Add Member
+          </button>
+        </div>
+        <div className="relative max-h-[60vh] overflow-y-auto shadow-lg rounded-lg">
           <table className="table-auto border-collapse text-left w-full bg-white">
             <thead className="sticky top-0">
               <tr className="bg-brand_red">
@@ -121,40 +181,49 @@ export default function Members() {
                 ? [...Array(10)].map((val, idx) => (
                     <tr key={idx}>
                       <td className="p-4">
-                        <div className="h-10 w-48 bg-gray-200 animate-pulse rounded-lg"></div>
+                        <div className="h-8 w-48 bg-gray-200 animate-pulse rounded-lg"></div>
                       </td>
                       <td className="p-4">
-                        <div className="h-10 w-48 bg-gray-200 animate-pulse rounded-lg"></div>
+                        <div className="h-8 w-48 bg-gray-200 animate-pulse rounded-lg"></div>
+                      </td>
+                      <td className="p-4">
+                        <div className="h-8 w-48 bg-gray-200 animate-pulse rounded-lg"></div>
                       </td>
                     </tr>
                   ))
-                : sortedF1GSMembers?.map((member, idx) => (
-                    <tr
-                      key={member.name + " " + idx}
-                      className={`hover:bg-gray-200 transition-colors ${
-                        idx === sortedF1GSMembers.length - 1
-                          ? ""
-                          : "border-b border-slate-300"
-                      }`}
-                    >
-                      <td className="p-4 flex items-center space-x-4">
-                        <h3 className="text-gray-700">{member.name}</h3>
-                      </td>
-                      <td className="p-4 text-gray-700">{member.email}</td>
-                      <td className="p-4 text-gray-700">
-                        {member.tags.join(", ")}
-                      </td>
-                    </tr>
-                  ))}
+                : sortedF1GSMembers
+                    ?.slice(10 * (pageNumber - 1), 10 * pageNumber)
+                    .map((member, idx) => (
+                      <tr
+                        key={member.name + " " + idx}
+                        className={`hover:bg-gray-200 transition-colors ${
+                          idx === sortedF1GSMembers.length - 1
+                            ? ""
+                            : "border-b border-slate-300"
+                        }`}
+                      >
+                        <td className="p-4 flex items-center space-x-4">
+                          <h3 className="text-gray-700">{member.name}</h3>
+                        </td>
+                        <td className="p-4 text-gray-700">{member.email}</td>
+                        <td className="p-4 text-gray-700 flex gap-x-2 items-center">
+                          {member.tags.map((tag, idx) => (
+                            <TagChip key={idx} chipText={tag}></TagChip>
+                          ))}
+                        </td>
+                      </tr>
+                    ))}
             </tbody>
           </table>
         </div>
         {isLoading ? (
           ""
         ) : (
-          <div className="flex justify-center mt-4 gap-x-2">
+          <div className="flex justify-center items-center mt-4 gap-x-2">
             <span
-              className="w-8 h-8 flex items-center justify-center bg-white shadow-lg rounded-lg cursor-pointer"
+              className={`${
+                totalPages > 1 ? "flex" : "hidden"
+              } w-8 h-8  items-center justify-center bg-white shadow-lg rounded-lg cursor-pointer`}
               onClick={() => handlePageDown()}
             >
               &#x2B05;
@@ -177,47 +246,56 @@ export default function Members() {
             >
               1
             </motion.span>
-            {pageNumber > 10 ? (
+            {pageNumber > 4 ? (
               <span className="w-8 h-8 flex items-center justify-center bg-white shadow-lg rounded-lg">
                 ...
               </span>
             ) : (
               ""
             )}
-            {[...Array(3)].map((val, idx) => {
-              let value = Math.min(
-                pageNumber,
-                Math.ceil((f1gsMembers?.length ?? 1) / 10) - 3
-              );
+            {totalPages > 4 &&
+              [...Array(3)].map((val, idx) => {
+                let value = Math.max(
+                  1, // Ensure value is at least 1
+                  Math.min(
+                    pageNumber,
+                    totalPages - 3 // Adjust to avoid negative or zero values
+                  )
+                );
 
-              if (value === 1) {
-                value += 1;
-              }
-              value += idx;
+                if (value === 1) {
+                  value += 1;
+                }
+                value += idx;
 
-              return (
-                <motion.span
-                  key={value}
-                  whileHover={
-                    pageNumber !== value
-                      ? {
-                          scale: 1.025,
-                          translateY: -5,
-                        }
-                      : {}
-                  }
-                  onClick={() => setPageNumber(value)}
-                  className={`w-8 h-8 flex items-center justify-center shadow-lg rounded-lg cursor-pointer ${
-                    pageNumber === value
-                      ? "bg-brand_red text-white"
-                      : "bg-white text-black"
-                  }`}
-                >
-                  {value}
-                </motion.span>
-              );
-            })}
-            {pageNumber < Math.ceil((f1gsMembers?.length ?? 1) / 10) - 10 ? (
+                // Ensure `value` does not exceed the total number of pages
+                if (value > totalPages) {
+                  value = totalPages;
+                }
+
+                return (
+                  <motion.span
+                    key={value}
+                    whileHover={
+                      pageNumber !== value
+                        ? {
+                            scale: 1.025,
+                            translateY: -5,
+                          }
+                        : {}
+                    }
+                    onClick={() => setPageNumber(value)}
+                    className={`w-8 h-8 flex items-center justify-center shadow-lg rounded-lg cursor-pointer ${
+                      pageNumber === value
+                        ? "bg-brand_red text-white"
+                        : "bg-white text-black"
+                    }`}
+                  >
+                    {value}
+                  </motion.span>
+                );
+              })}
+            {pageNumber < totalPages - 3 ? (
               <span className="w-8 h-8 flex items-center justify-center bg-white shadow-lg rounded-lg">
                 ...
               </span>
@@ -225,28 +303,30 @@ export default function Members() {
               ""
             )}
             <motion.span
-              onClick={() =>
-                setPageNumber(Math.ceil((f1gsMembers?.length ?? 1) / 10))
-              }
+              onClick={() => setPageNumber(totalPages)}
               whileHover={
-                pageNumber !== Math.ceil((f1gsMembers?.length ?? 1) / 10)
+                pageNumber !== totalPages
                   ? {
                       scale: 1.025,
                       translateY: -5,
                     }
                   : {}
               }
-              className={`w-8 h-8 flex items-center justify-center shadow-lg rounded-lg cursor-pointer ${
-                f1gsMembers?.length &&
-                Math.ceil(f1gsMembers?.length / 10) === pageNumber
+              className={`w-8 h-8 ${
+                totalPages > 1 ? "flex" : "hidden"
+              } items-center justify-center shadow-lg rounded-lg cursor-pointer ${
+                sortedF1GSMembers?.length &&
+                Math.ceil(sortedF1GSMembers?.length / 10) === pageNumber
                   ? "bg-brand_red text-white"
                   : "bg-white text-black"
               }`}
             >
-              {f1gsMembers?.length && Math.ceil(f1gsMembers?.length / 10)}
+              {totalPages}
             </motion.span>
             <span
-              className="w-8 h-8 flex items-center justify-center bg-white shadow-lg rounded-lg cursor-pointer"
+              className={`${
+                totalPages > 1 ? "flex" : "hidden"
+              } w-8 h-8  items-center justify-center bg-white shadow-lg rounded-lg cursor-pointer`}
               onClick={() => handlePageUp()}
             >
               &#x27A1;
@@ -254,6 +334,13 @@ export default function Members() {
           </div>
         )}
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={"Add F1GS Member"}
+      >
+        <SignupForm></SignupForm>
+      </Modal>
     </div>
   );
 }
